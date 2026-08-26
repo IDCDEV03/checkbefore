@@ -17,9 +17,7 @@ class AdminUserController extends Controller
     {
         $user_list = DB::table('users')
         ->join('user_details','users.user_id','=','user_details.user_id')
-        ->leftJoin('users as companies','users.user_dep','=','companies.user_id')
-        ->whereIn('users.role',['company','leader'])
-        ->select('users.*','user_details.*','users.user_id as user_id','companies.name as company_name')
+        ->where('users.role','=','company')
         ->get();
 
         return view('admin.UserList',compact('user_list'));

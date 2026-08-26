@@ -21,7 +21,6 @@
                                         <th>Logo</th>
                                         <th scope="col">หน่วยงาน/ชื่อผู้ใช้</th>
                                         <th scope="col">ระดับ</th>
-                                        <th scope="col">สังกัด</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -50,13 +49,6 @@
                                                     @elseif($item->role == 'user')
                                                     พนักงานทั่วไป
                                                 @endif</td>
-                                            <td>
-                                                @if ($item->role == 'leader')
-                                                    {{ $item->company_name ?? '-' }}
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
                                             <td>
 
                                                 <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="tooltip"
