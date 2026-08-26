@@ -16,8 +16,10 @@ class AdminUserController extends Controller
     public function UserList()
     {
         $user_list = DB::table('users')
-        ->join('user_details','users.user_id','=','user_details.user_id')   
-        ->where('users.role','=','company')    
+        ->join('user_details','users.user_id','=','user_details.user_id')
+        ->leftJoin('users as companies','users.user_dep','=','companies.user_id')
+        ->whereIn('users.role',['company','leader'])
+        ->select('users.*','user_details.*','users.user_id as user_id','companies.name as company_name')
         ->get();
 
         return view('admin.UserList',compact('user_list'));
@@ -25,12 +27,19 @@ class AdminUserController extends Controller
 
     public function CreateUser()
     {
-        return view('admin.UserCreate');
+        $company_list = DB::table('users')
+        ->join('user_details','users.user_id','=','user_details.user_id')
+        ->where('users.role','=','company')
+        ->get();
+
+        return view('admin.UserCreate',compact('company_list'));
     }
 
     public function InsertUser(Request $request)
     {
         $user_id = Str::upper(Str::random(10));
+        $company_id = $request->user_role == 'leader' ? $request->company_id : null;
+
         if ($request->hasFile('user_logo')) {
             $file_input = $request->file('user_logo');
             $name_gen = hexdec(uniqid());
@@ -46,6 +55,7 @@ class AdminUserController extends Controller
                 'fullname' => $request->name,
                 'user_logo' => $full_path,
                 'user_status' => '1',
+                'user_dep' => $company_id,
                 'created_at' => Carbon::now()
             ]);
         }else
@@ -55,6 +65,7 @@ class AdminUserController extends Controller
                 'fullname' => $request->name,
                 'user_logo' => '0',
                 'user_status' => '1',
+                'user_dep' => $company_id,
                 'created_at' => Carbon::now()
             ]);
         }
@@ -66,7 +77,8 @@ class AdminUserController extends Controller
             'password' => Hash::make($request->password),
             'password_2' => $request->password,
             'role'=>$request->user_role,
-            'created_at' => Carbon::now()          
+            'user_dep' => $company_id,
+            'created_at' => Carbon::now()
         ]);
         return redirect()->route('admin_Userlist')->with('success', 'สร้างบัญชีผู้ใช้สำเร็จ');
     }

@@ -58,10 +58,22 @@
                         <div class="row mb-3">
                             <label for="Role" class="col-md-4 col-form-label text-md-end">Role</label>
                             <div class="col-md-6">
-                            <select class="form-select" id="role" name="user_role">
+                            <select class="form-select" id="role" name="user_role" onchange="toggleCompanySelect()">
                                 <option selected disabled>--เลือก--</option>
                                 <option value="company">หน่วยงาน</option>
                                 <option value="leader">เจ้าหน้าที่</option>
+                              </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3" id="company_select_row" style="display:none;">
+                            <label for="company_id" class="col-md-4 col-form-label text-md-end">หน่วยงานที่สังกัด</label>
+                            <div class="col-md-6">
+                            <select class="form-select" id="company_id" name="company_id">
+                                <option value="" selected disabled>--เลือกหน่วยงาน--</option>
+                                @foreach ($company_list as $company)
+                                    <option value="{{ $company->user_id }}">{{ $company->name }}</option>
+                                @endforeach
                               </select>
                             </div>
                         </div>
@@ -79,4 +91,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    function toggleCompanySelect() {
+        var role = document.getElementById('role').value;
+        var row = document.getElementById('company_select_row');
+        var select = document.getElementById('company_id');
+        if (role === 'leader') {
+            row.style.display = '';
+            select.setAttribute('required', 'required');
+        } else {
+            row.style.display = 'none';
+            select.removeAttribute('required');
+        }
+    }
+</script>
 @endsection
